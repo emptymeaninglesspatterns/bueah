@@ -12,4 +12,4 @@ Again, I would like to note that this is not, at all, quality code. It (probably
 
 If you do find something and have a solution / idea on how I could solve it, feel free to open an issue! Feedback is always appreciated.
 
-![Preview](./assets/preview.mp4)
+https://github.com/user-attachments/assets/0d4ce97d-d814-4f73-950f-644bb8fc43f2
