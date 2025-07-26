@@ -12,4 +12,4 @@ Again, I would like to note that this is not, at all, quality code. It (probably
 
 If you do find something and have a solution / idea on how I could solve it, feel free to open an issue! Feedback is always appreciated.
 
-[Preview](./assets/preview.mp4)
+![Preview](./assets/preview.mp4)
