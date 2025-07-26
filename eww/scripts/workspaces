@@ -1,0 +1,21 @@
+#!/bin/bash
+
+focused=$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused).name')
+
+echo -n "["
+
+for i in {1..5}; do
+  if [ "$i" -eq 5 ]; then
+    comma=""
+  else
+    comma=","
+  fi
+
+  if [ "$focused" = "$i" ]; then
+    echo -n "{\"name\": \"$i\", \"focused\": true}$comma"
+  else
+    echo -n "{\"name\": \"$i\", \"focused\": false}$comma"
+  fi
+done
+
+echo "]"

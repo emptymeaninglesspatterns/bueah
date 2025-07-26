@@ -1,0 +1,108 @@
+;; VARIABLES --------------------------------------------------------
+
+(defpoll time :interval "5s"
+	 :initial "{\"hour\":\"12\",\"min\":\"00\",\"month\":\"01\",\"day\":\"01\"}"
+	 `date +'{"hour":"%H","min":"%M","month":"%m","day":"%d"}'`)
+
+(defpoll volume :interval "1s"
+	 `pamixer --get-volume`)
+
+(defpoll focused-ws :interval "0.1s"
+	 `swaymsg -t get_workspaces | jq -r '.[] | select(.focused).name'`)
+
+(defvar battery-visible "false")
+(defvar volume-visible "false")
+
+;; MAIN WIDGETS -----------------------------------------------------
+
+(defwidget frame []
+           (box :class "frame"))
+
+(defwidget bar []
+           (centerbox :orientation "v"
+                      (top)
+                      (center)
+                      (bottom)))
+
+(defwidget top []
+           (box :orientation "v"
+                :valign "start"
+                (workspaces)))
+
+(defwidget center []
+           "")
+
+(defwidget bottom []
+           (box :orientation "v"
+                :valign "end"
+                :space-evenly "false"
+                (battery)
+                (volume)
+                (clock)))
+
+;; SPECIFIC WIDGETS -------------------------------------------------
+
+;;; BAR -------------------------------------------------------------
+
+(defwidget workspaces []
+	   (box :orientation "v"
+		:valign "start"
+		:halign "center"
+		:space-evenly "false"
+		:class "workspaces"
+		(button :onclick "swaymsg workspace 1"
+			:class "${focused-ws == 1 ? 'focus' : ''}")
+		(button :onclick "swaymsg workspace 2"
+			:class "${focused-ws == 2 ? 'focus' : ''}")
+		(button :onclick "swaymsg workspace 3"
+			:class "${focused-ws == 3 ? 'focus' : ''}")
+		(button :onclick "swaymsg workspace 4"
+			:class "${focused-ws == 4 ? 'focus' : ''}")
+		(button :onclick "swaymsg workspace 5"
+			:class "${focused-ws == 5 ? 'focus' : ''}")))
+
+(defwidget volume []
+           (eventbox :onhover "eww update volume-visible='true'"
+                     :onhoverlost "eww update volume-visible='false'"
+                     (box :orientation "v"
+                          :space-evenly "false"
+                          :class "volume"
+                          :tooltip "${volume}%"
+                          (revealer :reveal volume-visible
+                                    :transition "slideup"
+                                    :duration "230ms"
+                                    (scale :orientation "v"
+                                           :flipped "true"
+                                           :height "200"
+                                           :min "0"
+                                           :max "100"
+                                           :value volume
+                                           :onchange "pamixer --set-volume {}"))
+                          (label :text "${volume == 0 ? '󰖁' : '󰕾'}"))))
+
+(defwidget battery []
+           (eventbox :onhover "eww update battery-visible='true'"
+                     :onhoverlost "eww update battery-visible='false'"
+                     (box :orientation "v"
+                          :space-evenly "false"
+                          :class "battery"
+                          :tooltip "${EWW_BATTERY.BAT0.capacity}%"
+                          (revealer :reveal battery-visible
+                                    :transition "slideup"
+                                    :duration "230ms"
+                                    (scale :orientation "v"
+                                           :active "false"
+                                           :flipped "true"
+                                           :height "200"
+                                           :min "0"
+                                           :max "100"
+                                           :value {EWW_BATTERY.BAT0.capacity}))
+                          (label :text "${EWW_BATTERY.BAT0.status == 'Charging' ? '󰂄' : '󰁹'}"))))
+
+
+(defwidget clock []
+           (box :orientation "v"
+                :valign "end"
+                :class "clock"
+                (label :text {time.hour})
+                (label :text {time.min})))

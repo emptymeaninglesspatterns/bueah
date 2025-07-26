@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$(eww get $1)" = "false" ]; then
+	eww update $1="true";
+else
+	eww update $1="false";
+fi
