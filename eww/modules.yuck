@@ -4,12 +4,16 @@
 	 :initial "{\"hour\":\"12\",\"min\":\"00\",\"month\":\"01\",\"day\":\"01\"}"
 	 `date +'{"hour":"%H","min":"%M","month":"%m","day":"%d"}'`)
 
+(defpoll brightness :interval "1s"
+         `brillo`)
+
 (defpoll volume :interval "1s"
-	 `pamixer --get-volume`)
+	 `pamixer --get-volume-human`)
 
 (defpoll focused-ws :interval "0.1s"
 	 `swaymsg -t get_workspaces | jq -r '.[] | select(.focused).name'`)
 
+(defvar brightness-visible "false")
 (defvar battery-visible "false")
 (defvar volume-visible "false")
 
@@ -36,6 +40,7 @@
            (box :orientation "v"
                 :valign "end"
                 :space-evenly "false"
+                (brightness)
                 (battery)
                 (volume)
                 (clock)))
@@ -61,13 +66,33 @@
 		(button :onclick "swaymsg workspace 5"
 			:class "${focused-ws == 5 ? 'focus' : ''}")))
 
+(defwidget brightness []
+           (eventbox :onhover "eww update brightness-visible='true'"
+                     :onhoverlost "eww update brightness-visible='false'"
+                     (box :orientation "v"
+                          :space-evenly "false"
+                          :class "brightness"
+                          :tooltip "${round(brightness, 0)}%"
+                          (revealer :reveal brightness-visible
+                                    :transition "slideup"
+                                    :duration "230ms"
+                                    (scale :orientation "v"
+                                           :flipped "true"
+                                           :height "200"
+                                           :min "0"
+                                           :max "100"
+                                           :value brightness
+                                           :onchange "brillo -S {}"))
+                          (label :text "󰌵"))))
+
+
 (defwidget volume []
            (eventbox :onhover "eww update volume-visible='true'"
                      :onhoverlost "eww update volume-visible='false'"
                      (box :orientation "v"
                           :space-evenly "false"
                           :class "volume"
-                          :tooltip "${volume}%"
+                          :tooltip "${volume}"
                           (revealer :reveal volume-visible
                                     :transition "slideup"
                                     :duration "230ms"
@@ -76,9 +101,9 @@
                                            :height "200"
                                            :min "0"
                                            :max "100"
-                                           :value volume
+                                           :value {replace(volume, '%$', '')}
                                            :onchange "pamixer --set-volume {}"))
-                          (label :text "${volume == 0 ? '󰖁' : '󰕾'}"))))
+                          (label :text "${volume == 'muted' ? '󰖁' : '󰕾'}"))))
 
 (defwidget battery []
            (eventbox :onhover "eww update battery-visible='true'"

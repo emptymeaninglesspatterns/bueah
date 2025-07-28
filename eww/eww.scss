@@ -93,3 +93,25 @@ tooltip {
     border-radius: 8px;
   }
 }
+
+.brightness {
+  margin: 6px;
+  margin-bottom: -2px;
+  padding: 9px 0px;
+  background: #222224;
+  border-radius: 4px;
+  label {
+    font-size: 20px;
+  }
+  scale trough {
+    min-width: 8px;
+    margin-bottom: 6px;
+    background: #323234;
+    border-radius: 8px;
+  }
+
+  scale trough highlight {
+    background: #fcf774;
+    border-radius: 8px;
+  }
+}
